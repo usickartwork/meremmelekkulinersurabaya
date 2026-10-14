@@ -1,14 +1,18 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function UnderConstructionPage() {
+  const router = useRouter();
+
   // Animation Stages:
   // 1: Mata (Only the two eyes from the real logo appear)
   // 2: Senyum (The smile curve from the real logo appears)
   // 3: Garpu & Sendok (The fork & spoon from the real logo appears)
   // 4: Logo Lengkap (The full authentic Merem logo reveals completely)
   const [step, setStep] = useState<number>(1);
+  const [clickCount, setClickCount] = useState<number>(0);
 
   useEffect(() => {
     // Timing sequence for the motion graphics of the real logo
@@ -23,7 +27,17 @@ export default function UnderConstructionPage() {
     };
   }, []);
 
-  const handleReplay = () => {
+  const handleLogoClick = () => {
+    const nextCount = clickCount + 1;
+    setClickCount(nextCount);
+
+    // Easter egg secret entrance: 10 clicks unlocks the portal
+    if (nextCount >= 10) {
+      router.push('/portal');
+      return;
+    }
+
+    // Replay animation on click
     setStep(1);
     setTimeout(() => setStep(2), 750);
     setTimeout(() => setStep(3), 1500);
@@ -37,11 +51,10 @@ export default function UnderConstructionPage() {
 
       {/* Center Container */}
       <div className="flex flex-col items-center justify-center z-10 max-w-xl text-center">
-        {/* Animated Real Logo Area */}
+        {/* Animated Real Logo Area (Click 10 times to enter portal) */}
         <div
-          onClick={handleReplay}
-          className="relative cursor-pointer w-72 sm:w-96 aspect-[690/291] flex items-center justify-center transition-transform hover:scale-102"
-          title="Klik untuk memutar ulang animasi logo"
+          onClick={handleLogoClick}
+          className="relative cursor-pointer w-72 sm:w-96 aspect-[690/291] flex items-center justify-center transition-transform active:scale-98 hover:scale-102"
         >
           {/* Subtle logo back-glow */}
           <div className="absolute inset-4 bg-orange-500/20 rounded-full blur-2xl pointer-events-none" />
