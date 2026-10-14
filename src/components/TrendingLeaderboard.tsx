@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { Flame, TrendingUp, Eye, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Eye, ArrowUpRight } from 'lucide-react';
 import { Article } from '@/types';
 import AdSlot from './ads/AdSlot';
 
@@ -22,11 +22,6 @@ export default function TrendingLeaderboard({
           <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-neutral-900 font-editorial-serif">
             Trending & Terpopuler
           </h2>
-        </div>
-        <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
-          <span className="flex items-center gap-1 text-orange-600">
-            <Flame className="w-4 h-4 fill-orange-500" /> Algoritma Real-Time
-          </span>
         </div>
       </div>
 
