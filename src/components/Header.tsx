@@ -51,11 +51,13 @@ export default function Header({ categories }: HeaderProps) {
               <span className="text-orange-400 font-semibold flex items-center gap-1">
                 <Flame className="w-3 h-3" /> Trending:
               </span>
-              <Link href="/search?q=rawon" className="hover:text-white transition-colors">#RawonSetan</Link>
+              <Link href="/search?q=prj" className="hover:text-white transition-colors">#PRJSurabaya</Link>
               <span className="text-neutral-600">•</span>
-              <Link href="/search?q=bebek" className="hover:text-white transition-colors">#BebekPalupi</Link>
+              <Link href="/search?q=dimsum" className="hover:text-white transition-colors">#DimsumMentai</Link>
               <span className="text-neutral-600">•</span>
-              <Link href="/search?q=petis" className="hover:text-white transition-colors">#PetisMadura</Link>
+              <Link href="/search?q=matcha" className="hover:text-white transition-colors">#MatchaUbe</Link>
+              <span className="text-neutral-600">•</span>
+              <Link href="/search?q=chikuro" className="hover:text-white transition-colors">#ChikuroViral</Link>
             </div>
 
             <div className="flex items-center gap-3 border-l border-neutral-700 pl-3">
@@ -118,7 +120,7 @@ export default function Header({ categories }: HeaderProps) {
         <form onSubmit={handleSearch} className="hidden md:flex items-center relative w-72 lg:w-80">
           <input
             type="text"
-            placeholder="Cari rawon, bebek, kafe, event..."
+            placeholder="Cari PRJ, dimsum, matcha, chikuro..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full text-xs py-2 pl-3 pr-9 border border-neutral-300 rounded focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all bg-neutral-50/50"

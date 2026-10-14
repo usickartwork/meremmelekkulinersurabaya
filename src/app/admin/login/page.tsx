@@ -75,7 +75,7 @@ export default function AdminLoginPage() {
                 placeholder="Masukkan kata sandi..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full text-xs py-3 pl-10 pr-3 bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+                className="w-full text-base py-3 pl-10 pr-3 bg-neutral-900 border border-neutral-700 text-white placeholder-neutral-500 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
               />
               <KeyRound className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3.5" />
             </div>

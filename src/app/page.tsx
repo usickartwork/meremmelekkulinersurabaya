@@ -15,10 +15,10 @@ export default function UnderConstructionPage() {
   const [clickCount, setClickCount] = useState<number>(0);
 
   useEffect(() => {
-    // Timing sequence for the motion graphics of the real logo
-    const t1 = setTimeout(() => setStep(2), 750);   // Eyes -> Smile
-    const t2 = setTimeout(() => setStep(3), 1500);  // Smile -> Garpu & Spoon
-    const t3 = setTimeout(() => setStep(4), 2250);  // Garpu -> Full Logo
+    // Snappy timing sequence for the motion graphics of the real logo
+    const t1 = setTimeout(() => setStep(2), 350);  // Eyes -> Smile
+    const t2 = setTimeout(() => setStep(3), 750);  // Smile -> Garpu & Spoon
+    const t3 = setTimeout(() => setStep(4), 1150); // Garpu -> Full Logo
 
     return () => {
       clearTimeout(t1);
@@ -39,9 +39,9 @@ export default function UnderConstructionPage() {
 
     // Replay animation on click
     setStep(1);
-    setTimeout(() => setStep(2), 750);
-    setTimeout(() => setStep(3), 1500);
-    setTimeout(() => setStep(4), 2250);
+    setTimeout(() => setStep(2), 350);
+    setTimeout(() => setStep(3), 750);
+    setTimeout(() => setStep(4), 1150);
   };
 
   return (
