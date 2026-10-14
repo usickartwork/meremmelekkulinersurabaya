@@ -175,7 +175,7 @@ export const INITIAL_ARTICLES: Article[] = [
     "content": "**SURABAYA** — Gelaran Pekan Raya Jatim (PRJ) Surabaya 2026 yang berlangsung di Grand City Exhibition & Convex Surabaya menjadi magnet bagi warga Kota Pahlawan. Berbagai arena pameran dan hiburan dipadati pengunjung, terutama di zona kuliner yang menyajikan beragam hidangan khas hingga jajanan kekinian.\n\nAntusiasme masyarakat terlihat dari antrean panjang di sejumlah tenant makanan dan minuman. **Valerie Lidyanto**, salah seorang pengunjung PRJ Surabaya 2026, menuturkan bahwa dirinya sengaja datang untuk merasakan langsung kemeriahan festival kuliner tersebut.\n\n> *\"Awalnya tahu dari media sosial kalau pilihan stannya banyak banget. Tadi sempat antre cukup lama, tapi rasanya worth it karena makanannya enak dan suasananya ramai,\"* kata Valerie saat ditemui di area pameran kuliner.\n\nIa menilai konsep jajanan praktis yang ditawarkan para pelaku usaha sangat cocok dengan atmosfer pameran, sehingga pengunjung dapat menikmati hidangan sembari mengelilingi area event. Keberadaan ragam kuliner ini turut menjadi daya tarik tersendiri dalam melengkapi keseruan PRJ Surabaya 2026.",
     "status": "published",
     "authorId": "auth-admin",
-    "authorName": "Jua",
+    "authorName": "Najwa",
     "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&q=80",
     "categoryId": "cat-event",
     "categoryName": "Event",
@@ -184,7 +184,7 @@ export const INITIAL_ARTICLES: Article[] = [
     "editorPick": true,
     "breaking": true,
     "coverImage": "/prj-surabaya.png",
-    "coverImageCaption": "Suasana antrean dan ramainya pengunjung berburu jajanan kuliner kekinian di ajang Pekan Raya Jatim (PRJ) Surabaya 2026, Grand City Convex. (Foto: Dok. Redaksi Merem Kuliner / Jua)",
+    "coverImageCaption": "Suasana antrean dan ramainya pengunjung berburu jajanan kuliner kekinian di ajang Pekan Raya Jatim (PRJ) Surabaya 2026, Grand City Convex. (Foto: Dok. Redaksi Merem Kuliner / Najwa)",
     "additionalImages": [],
     "tags": [
       "prj surabaya 2026",

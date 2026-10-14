@@ -110,27 +110,21 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
             {/* Author & Meta Row */}
             <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-neutral-200">
-              <div className="flex items-center gap-3">
-                {article.authorAvatar && (
-                  <img
-                    src={article.authorAvatar}
-                    alt={article.authorName}
-                    className="w-10 h-10 rounded-full object-cover border border-neutral-300"
-                  />
-                )}
-                <div>
-                  <p className="text-sm font-bold text-neutral-900">{article.authorName}</p>
-                  <div className="flex items-center gap-2 text-xs text-neutral-500">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
-                      {formattedDate}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {article.readingTimeMinutes} menit baca
-                    </span>
-                  </div>
+              <div>
+                <p className="text-sm text-neutral-900">
+                  <span className="text-neutral-500 font-medium text-xs">Penulis: </span>
+                  <span className="font-bold text-neutral-900 hover:text-orange-600 transition-colors">{article.authorName}</span>
+                </p>
+                <div className="flex items-center gap-2 text-xs text-neutral-500 mt-1">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {formattedDate}
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3 h-3" />
+                    {article.readingTimeMinutes} menit baca
+                  </span>
                 </div>
               </div>
             </div>
