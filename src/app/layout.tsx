@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import LogoIntroSplash from "@/components/LogoIntroSplash";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -40,6 +41,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
       <body className="min-h-full flex flex-col bg-[#FDFDFD] text-[#121212] font-sans antialiased selection:bg-orange-500 selection:text-white">
+        <LogoIntroSplash />
         {children}
       </body>
     </html>

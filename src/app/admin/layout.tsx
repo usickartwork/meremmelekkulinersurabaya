@@ -31,18 +31,50 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
 
   // If on login page, render without admin layout shell
+  useEffect(() => {
+    if (pathname === '/admin/login') {
+      setIsChecking(false);
+      return;
+    }
+
+    const auth = typeof window !== 'undefined' ? localStorage.getItem('merem_admin_auth') : null;
+    if (auth === 'utssukses') {
+      setIsAuthenticated(true);
+      setIsChecking(false);
+    } else {
+      setIsChecking(false);
+      router.push('/admin/login');
+    }
+  }, [pathname, router]);
+
   if (pathname === '/admin/login') {
     return <>{children}</>;
   }
 
   const handleLogout = () => {
     if (typeof window !== 'undefined') {
+      localStorage.removeItem('merem_admin_auth');
       localStorage.removeItem('merem_admin_session');
     }
     router.push('/admin/login');
   };
+
+  if (isChecking) {
+    return (
+      <div className="min-h-screen bg-[#111113] flex flex-col items-center justify-center p-4">
+        <img src="/logo-dark.png" alt="Loading..." className="h-10 w-auto object-contain animate-pulse mb-3" />
+        <p className="text-xs text-neutral-400">Memeriksa izin akses admin...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex bg-neutral-100 text-neutral-900 font-sans">
