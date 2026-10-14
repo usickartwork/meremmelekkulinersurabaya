@@ -1,9 +1,8 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { DUMMY_ADS, DummyAd } from '@/data/dummy-ads';
-import { AdIcon } from './AdIcons';
-import { Info, Pause, Play, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { COMMERCIAL_ADS, CommercialAd } from '@/data/dummy-ads';
+import { ChevronDown, ChevronUp, Info, X } from 'lucide-react';
 
 interface AdSlotProps {
   placement: 'header' | 'sidebar' | 'in-article';
@@ -18,370 +17,244 @@ export default function AdSlot({
 }: AdSlotProps) {
   // Filter ads for this placement
   const availableAds = useMemo(() => {
-    return DUMMY_ADS.filter((ad) => ad.supportedPlacements.includes(placement));
+    return COMMERCIAL_ADS.filter((ad) => ad.supportedPlacements.includes(placement));
   }, [placement]);
 
   const [currentIndex, setCurrentIndex] = useState(
     initialIndex % (availableAds.length || 1)
   );
-  const [isPlaying, setIsPlaying] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
-  const [showInfoModal, setShowInfoModal] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [showAdChoicesModal, setShowAdChoicesModal] = useState(false);
 
-  // Detect prefers-reduced-motion
+  // Auto-rotation (10 seconds)
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-      setReducedMotion(mediaQuery.matches);
-      if (mediaQuery.matches) {
-        setIsPlaying(false);
-      }
-      const listener = (e: MediaQueryListEvent) => {
-        setReducedMotion(e.matches);
-        if (e.matches) setIsPlaying(false);
-      };
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
-    }
-  }, []);
-
-  // Timer rotation (10 seconds)
-  useEffect(() => {
-    if (!isPlaying || isHovered || reducedMotion || availableAds.length <= 1) {
-      return;
-    }
+    if (isHovered || isCollapsed || availableAds.length <= 1) return;
 
     const timer = setInterval(() => {
-      // Pause if tab is in background
-      if (typeof document !== 'undefined' && document.hidden) {
-        return;
-      }
+      if (typeof document !== 'undefined' && document.hidden) return;
       setCurrentIndex((prev) => (prev + 1) % availableAds.length);
     }, 10000);
 
     return () => clearInterval(timer);
-  }, [isPlaying, isHovered, reducedMotion, availableAds.length]);
+  }, [isHovered, isCollapsed, availableAds.length]);
 
-  const currentAd: DummyAd | undefined = availableAds[currentIndex] || availableAds[0];
+  const currentAd: CommercialAd | undefined =
+    availableAds[currentIndex] || availableAds[0];
 
   if (!currentAd) return null;
 
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev + 1) % availableAds.length);
-  };
-
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCurrentIndex((prev) => (prev - 1 + availableAds.length) % availableAds.length);
-  };
-
-  const togglePlay = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsPlaying((prev) => !prev);
-  };
-
   return (
     <div
-      className={`relative w-full flex flex-col items-center justify-center my-4 ${className}`}
+      className={`relative w-full flex flex-col items-center justify-center ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       role="region"
-      aria-label={`Simulasi Iklan ${placement}`}
+      aria-label={`Advertisement ${placement}`}
     >
-      {/* Top Banner Disclaimer Header */}
-      <div className="w-full max-w-[970px] flex items-center justify-between text-[10px] text-neutral-600 uppercase tracking-widest font-mono px-1 pb-1">
-        <span className="flex items-center gap-1.5 font-semibold text-neutral-600">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block animate-pulse" />
-          SIMULASI IKLAN • PROTOTIPE EDITORIAL
-        </span>
-        <button
-          onClick={() => setShowInfoModal(true)}
-          className="hover:text-neutral-900 transition-colors flex items-center gap-0.5 cursor-pointer"
-          title="Tentang simulasi iklan"
-        >
-          <Info className="w-3 h-3" />
-          <span>Tentang Iklan</span>
-        </button>
-      </div>
-
-      {/* Main Responsive Ad Frame */}
-      {placement === 'sidebar' && (
-        /* Sidebar: standard 300x250 banner */
-        <div
-          className={`w-[300px] h-[250px] relative rounded-xs shadow-xs border border-neutral-300 overflow-hidden flex flex-col justify-between p-4 bg-gradient-to-br ${currentAd.theme.bgGradient} transition-opacity duration-300`}
-        >
-          {/* Top Brand row */}
-          <div className="flex items-center justify-between z-10">
-            <span
-              className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded text-white"
-              style={{ backgroundColor: currentAd.theme.badgeBg, color: currentAd.theme.accentColor }}
-            >
-              {currentAd.brandCategory}
-            </span>
-            <div className="flex items-center gap-1.5">
-              <AdIcon name={currentAd.svgIcon} className="w-4 h-4" />
-              <span className="text-xs font-black tracking-wide text-white">
-                {currentAd.brandName}
-              </span>
-            </div>
-          </div>
-
-          {/* Center Content */}
-          <div className="my-auto z-10 text-center px-1">
-            <h4
-              className="text-base font-black leading-snug tracking-tight mb-2 font-editorial-serif line-clamp-2"
-              style={{ color: currentAd.theme.textColor }}
-            >
-              {currentAd.headline}
-            </h4>
-            <p className="text-[11px] text-neutral-300 leading-relaxed line-clamp-2">
-              {currentAd.subheadline}
-            </p>
-          </div>
-
-          {/* Bottom Action & Controls */}
-          <div className="flex items-center justify-between z-10 pt-2 border-t border-white/10">
-            <button
-              type="button"
-              className="text-[11px] font-bold py-1.5 px-3 rounded-xs shadow-xs transition-transform hover:scale-105 active:scale-95 cursor-default"
-              style={{
-                backgroundColor: currentAd.theme.buttonBg,
-                color: currentAd.theme.buttonText,
-              }}
-              title="Simulasi Iklan — Tidak ada aksi eksternal"
-            >
-              {currentAd.ctaText}
-            </button>
-
-            {/* Micro Controls */}
-            <div className="flex items-center gap-1 text-neutral-400 bg-black/40 px-1.5 py-0.5 rounded text-[10px]">
-              <button
-                onClick={handlePrev}
-                aria-label="Iklan sebelumnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-3 h-3" />
-              </button>
-              <button
-                onClick={togglePlay}
-                aria-label={isPlaying ? 'Jeda rotasi' : 'Lanjutkan rotasi'}
-                className="hover:text-white transition-colors"
-              >
-                {isPlaying ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
-              </button>
-              <button
-                onClick={handleNext}
-                aria-label="Iklan berikutnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {placement === 'header' && (
-        /* Header: 970x90 Desktop / 728x90 Tablet / 320x100 Mobile */
-        <div
-          className={`w-full max-w-[970px] min-h-[90px] sm:h-[90px] relative rounded-xs shadow-xs border border-neutral-300 overflow-hidden flex flex-col sm:flex-row items-center justify-between px-3 sm:px-6 py-2.5 bg-gradient-to-r ${currentAd.theme.bgGradient} transition-opacity duration-300`}
-        >
-          {/* Brand & Category pill */}
-          <div className="flex items-center gap-3 shrink-0 mb-1 sm:mb-0">
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center border border-white/20 shadow-xs"
-              style={{ backgroundColor: currentAd.theme.badgeBg, color: currentAd.theme.accentColor }}
-            >
-              <AdIcon name={currentAd.svgIcon} className="w-5 h-5" />
-            </div>
-            <div className="text-left">
-              <span
-                className="text-[9px] font-bold uppercase tracking-wider block"
-                style={{ color: currentAd.theme.accentColor }}
-              >
-                {currentAd.brandCategory}
-              </span>
-              <span className="text-xs sm:text-sm font-black tracking-wide text-white">
-                {currentAd.brandName}
-              </span>
-            </div>
-          </div>
-
-          {/* Headline & Description */}
-          <div className="flex-1 text-center sm:text-left sm:px-6 my-1 sm:my-0">
-            <h4
-              className="text-xs sm:text-sm md:text-base font-extrabold tracking-tight line-clamp-1"
-              style={{ color: currentAd.theme.textColor }}
-            >
-              {currentAd.headline}
-            </h4>
-            <p className="hidden md:block text-[11px] text-neutral-300 line-clamp-1">
-              {currentAd.subheadline}
-            </p>
-          </div>
-
-          {/* CTA & Controls */}
-          <div className="flex items-center gap-3 shrink-0">
-            <button
-              type="button"
-              className="text-xs font-bold py-1.5 px-4 rounded-xs shadow-xs transition-transform hover:scale-105 active:scale-95 cursor-default whitespace-nowrap"
-              style={{
-                backgroundColor: currentAd.theme.buttonBg,
-                color: currentAd.theme.buttonText,
-              }}
-              title="Simulasi Iklan — Tidak ada aksi eksternal"
-            >
-              {currentAd.ctaText}
-            </button>
-
-            {/* Rotator Controls */}
-            <div className="flex items-center gap-1 text-neutral-400 bg-black/40 px-1.5 py-1 rounded text-[10px]">
-              <button
-                onClick={handlePrev}
-                aria-label="Iklan sebelumnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={togglePlay}
-                aria-label={isPlaying ? 'Jeda rotasi' : 'Lanjutkan rotasi'}
-                className="hover:text-white transition-colors"
-              >
-                {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-              </button>
-              <button
-                onClick={handleNext}
-                aria-label="Iklan berikutnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Detik-style "Hide Ads ⌵" pill (specifically prominent on in-article banner as in detikJatim) */}
       {placement === 'in-article' && (
-        /* In-Article: 728x90 desktop / fluid mobile */
-        <div
-          className={`w-full max-w-[728px] min-h-[90px] relative rounded-xs shadow-xs border border-neutral-300 overflow-hidden flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-3 bg-gradient-to-r ${currentAd.theme.bgGradient} transition-opacity duration-300`}
-        >
-          <div className="flex items-center gap-3 shrink-0 mb-2 sm:mb-0">
-            <div
-              className="w-9 h-9 rounded-full flex items-center justify-center border border-white/20"
-              style={{ backgroundColor: currentAd.theme.badgeBg, color: currentAd.theme.accentColor }}
-            >
-              <AdIcon name={currentAd.svgIcon} className="w-4 h-4" />
-            </div>
-            <div>
-              <span
-                className="text-[9px] font-bold uppercase tracking-wider block"
-                style={{ color: currentAd.theme.accentColor }}
-              >
-                Sponsor Rekomendasi
-              </span>
-              <span className="text-xs font-black text-white">
-                {currentAd.brandName}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex-1 text-center sm:text-left sm:px-5 my-1 sm:my-0">
-            <h4
-              className="text-xs sm:text-sm font-bold tracking-tight line-clamp-1"
-              style={{ color: currentAd.theme.textColor }}
-            >
-              {currentAd.headline}
-            </h4>
-            <p className="text-[11px] text-neutral-300 line-clamp-1">
-              {currentAd.subheadline}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              className="text-xs font-bold py-1.5 px-3.5 rounded-xs shadow-xs transition-transform hover:scale-105 active:scale-95 cursor-default whitespace-nowrap"
-              style={{
-                backgroundColor: currentAd.theme.buttonBg,
-                color: currentAd.theme.buttonText,
-              }}
-              title="Simulasi Iklan — Tidak ada aksi eksternal"
-            >
-              {currentAd.ctaText}
-            </button>
-
-            {/* Rotator Controls */}
-            <div className="flex items-center gap-0.5 text-neutral-400 bg-black/40 px-1 py-1 rounded text-[10px]">
-              <button
-                onClick={handlePrev}
-                aria-label="Iklan sebelumnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-3 h-3" />
-              </button>
-              <button
-                onClick={togglePlay}
-                aria-label={isPlaying ? 'Jeda rotasi' : 'Lanjutkan rotasi'}
-                className="hover:text-white transition-colors"
-              >
-                {isPlaying ? <Pause className="w-2.5 h-2.5" /> : <Play className="w-2.5 h-2.5" />}
-              </button>
-              <button
-                onClick={handleNext}
-                aria-label="Iklan berikutnya"
-                className="hover:text-white transition-colors"
-              >
-                <ChevronRight className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
+        <div className="w-full max-w-[728px] flex justify-end mb-1 pr-1">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-500 bg-neutral-100 hover:bg-neutral-200 hover:text-neutral-800 px-2.5 py-0.5 rounded-full transition-colors cursor-pointer border border-neutral-200 shadow-2xs"
+            title="Sembunyikan / Tampilkan Iklan"
+          >
+            {isCollapsed ? (
+              <>
+                <span>Show Ads</span>
+                <ChevronDown className="w-3 h-3" />
+              </>
+            ) : (
+              <>
+                <span>Hide Ads</span>
+                <ChevronUp className="w-3 h-3" />
+              </>
+            )}
+          </button>
         </div>
       )}
 
-      {/* Info / Disclosure Modal */}
-      {showInfoModal && (
+      {/* When collapsed */}
+      {isCollapsed ? (
+        <div className="w-full max-w-[728px] py-2 bg-neutral-100 border border-dashed border-neutral-300 text-center text-xs text-neutral-400 rounded-xs">
+          Iklan disembunyikan
+        </div>
+      ) : (
+        /* Actual Ad Creative Container */
+        <div className="relative group w-full flex justify-center">
+          {/* Header Billboard Placement */}
+          {placement === 'header' && (
+            <div className="w-full max-w-[970px] relative bg-neutral-900 rounded-none overflow-hidden shadow-xs border border-neutral-200">
+              <a
+                href={currentAd.targetUrl}
+                onClick={(e) => e.preventDefault()}
+                className="block relative w-full aspect-[970/160] sm:aspect-[970/120] md:aspect-[970/100] max-h-[140px] overflow-hidden"
+              >
+                <img
+                  src={currentAd.imageSrc}
+                  alt={currentAd.altText}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.01]"
+                />
+              </a>
+
+              {/* Google AdChoices badge in top right corner */}
+              <div className="absolute top-1 right-1 z-20 flex items-center bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded-xs shadow-xs text-[10px] text-neutral-600 gap-1 border border-neutral-300">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAdChoicesModal(true);
+                  }}
+                  className="flex items-center gap-0.5 hover:text-blue-600 transition-colors cursor-pointer"
+                  title="AdChoices / Tentang Iklan"
+                >
+                  <span className="text-[9px] font-sans text-neutral-500">Iklan</span>
+                  <svg className="w-2.5 h-2.5 text-blue-500 fill-blue-500" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsCollapsed(true);
+                  }}
+                  className="hover:text-neutral-900 transition-colors ml-0.5 cursor-pointer"
+                  title="Tutup Iklan"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Sidebar Placement (300x250 Medium Rectangle) */}
+          {placement === 'sidebar' && (
+            <div className="w-[300px] sm:w-[320px] max-w-full relative bg-neutral-900 overflow-hidden shadow-xs border border-neutral-200 rounded-none">
+              <a
+                href={currentAd.targetUrl}
+                onClick={(e) => e.preventDefault()}
+                className="block relative w-full aspect-[4/3] sm:aspect-square overflow-hidden"
+              >
+                <img
+                  src={currentAd.imageSrc}
+                  alt={currentAd.altText}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                />
+              </a>
+
+              {/* Google AdChoices badge in top right corner */}
+              <div className="absolute top-1.5 right-1.5 z-20 flex items-center bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded-xs shadow-xs text-[10px] text-neutral-600 gap-1 border border-neutral-300">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAdChoicesModal(true);
+                  }}
+                  className="flex items-center gap-0.5 hover:text-blue-600 transition-colors cursor-pointer"
+                  title="AdChoices / Tentang Iklan"
+                >
+                  <span className="text-[9px] font-sans text-neutral-500">Iklan</span>
+                  <svg className="w-2.5 h-2.5 text-blue-500 fill-blue-500" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsCollapsed(true);
+                  }}
+                  className="hover:text-neutral-900 transition-colors ml-0.5 cursor-pointer"
+                  title="Tutup Iklan"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* In-Article Placement */}
+          {placement === 'in-article' && (
+            <div className="w-full max-w-[728px] relative bg-neutral-900 overflow-hidden shadow-xs border border-neutral-200 rounded-none">
+              <a
+                href={currentAd.targetUrl}
+                onClick={(e) => e.preventDefault()}
+                className="block relative w-full aspect-[16/9] sm:aspect-[728/180] md:aspect-[728/140] overflow-hidden"
+              >
+                <img
+                  src={currentAd.imageSrc}
+                  alt={currentAd.altText}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.01]"
+                />
+              </a>
+
+              {/* Google AdChoices badge in top right corner */}
+              <div className="absolute top-1.5 right-1.5 z-20 flex items-center bg-white/90 backdrop-blur-xs px-1.5 py-0.5 rounded-xs shadow-xs text-[10px] text-neutral-600 gap-1 border border-neutral-300">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowAdChoicesModal(true);
+                  }}
+                  className="flex items-center gap-0.5 hover:text-blue-600 transition-colors cursor-pointer"
+                  title="AdChoices / Tentang Iklan"
+                >
+                  <span className="text-[9px] font-sans text-neutral-500">Iklan</span>
+                  <svg className="w-2.5 h-2.5 text-blue-500 fill-blue-500" viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsCollapsed(true);
+                  }}
+                  className="hover:text-neutral-900 transition-colors ml-0.5 cursor-pointer"
+                  title="Tutup Iklan"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* AdChoices Information Modal */}
+      {showAdChoicesModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          onClick={() => setShowInfoModal(false)}
+          onClick={() => setShowAdChoicesModal(false)}
         >
           <div
             className="bg-white text-neutral-900 rounded-md p-6 max-w-md w-full shadow-2xl border border-neutral-300 relative text-left"
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => setShowInfoModal(false)}
+              onClick={() => setShowAdChoicesModal(false)}
               className="absolute top-3 right-3 text-neutral-400 hover:text-neutral-700"
               aria-label="Tutup"
             >
               <X className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2 mb-3">
-              <span className="w-2.5 h-2.5 bg-amber-500 rounded-full" />
+              <svg className="w-4 h-4 text-blue-600 fill-blue-600" viewBox="0 0 24 24">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
               <h3 className="font-bold text-base text-neutral-900">
-                Pemberitahuan Simulasi Iklan
+                Tentang Iklan Ini (AdChoices)
               </h3>
             </div>
             <p className="text-xs text-neutral-600 leading-relaxed mb-3">
-              Seluruh iklan yang ditampilkan pada portal <strong>Merem Kuliner Surabaya</strong>{' '}
-              ini merupakan <strong>simulasi frontend murni (dummy prototype)</strong> untuk tujuan demonstrasi
-              tata letak monetisasi media digital editorial.
+              Iklan ini merupakan materi simulasi promosi digital (seperti <em>Sido Muncul Tolak Linu</em>,{' '}
+              <em>NetShort</em>, dan <em>Traveloka</em>) yang didesain mengikuti standar tata letak portal berita nasional (detikJatim/Kompas).
             </p>
-            <ul className="text-xs text-neutral-600 space-y-1.5 list-disc pl-4 mb-4">
-              <li>Tidak terhubung ke jaringan periklanan (AdSense, programmatic ad, dsb).</li>
-              <li>Tidak mengumpulkan data analitik atau pelacakan pengguna.</li>
-              <li>Merek dan materi promosi bersifat fiktif atau simulasi semata.</li>
-              <li>Tidak memproses transaksi finansial atau pendapatan iklan nyata.</li>
-            </ul>
+            <p className="text-xs text-neutral-500 leading-relaxed mb-4">
+              Tidak ada data pribadi pengguna yang dilacak atau disimpan untuk penayangan iklan ini.
+            </p>
             <div className="text-right">
               <button
-                onClick={() => setShowInfoModal(false)}
-                className="text-xs bg-neutral-900 text-white font-semibold px-4 py-2 rounded hover:bg-neutral-800 transition-colors"
+                onClick={() => setShowAdChoicesModal(false)}
+                className="text-xs bg-neutral-900 text-white font-semibold px-4 py-2 rounded hover:bg-neutral-800 transition-colors cursor-pointer"
               >
-                Mengerti
+                Tutup
               </button>
             </div>
           </div>
@@ -390,4 +263,3 @@ export default function AdSlot({
     </div>
   );
 }
-
