@@ -8,6 +8,7 @@ import EditorPickSection from '@/components/EditorPickSection';
 import CategoryHighlights from '@/components/CategoryHighlights';
 import Footer from '@/components/Footer';
 import PortalEntranceIntro from '@/components/PortalEntranceIntro';
+import AdSlot from '@/components/ads/AdSlot';
 import { getArticles, getCategories } from '@/lib/store';
 import {
   getBreakingNews,
@@ -44,6 +45,9 @@ export default async function PortalPage() {
 
       {/* Main Editorial Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 flex-1 w-full">
+        {/* Top Header Billboard Advertisement */}
+        <AdSlot placement="header" className="mb-8" />
+
         {/* Hero Section */}
         {mainHero && <HeroSection mainArticle={mainHero} subArticles={subHero} />}
 

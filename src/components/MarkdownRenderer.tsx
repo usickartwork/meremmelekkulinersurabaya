@@ -1,4 +1,5 @@
 import React from 'react';
+import AdSlot from './ads/AdSlot';
 
 /**
  * Parses inline Markdown formatting:
@@ -66,17 +67,42 @@ export function renderFormattedInline(text: string): React.ReactNode {
 export function MarkdownRenderer({
   content,
   className = '',
+  showInArticleAd = false,
 }: {
   content: string;
   className?: string;
+  showInArticleAd?: boolean;
 }) {
   if (!content) return null;
 
-  const blocks = content.split(/\n\s*\n/);
+  const rawBlocks = content.split(/\n\s*\n/).filter((b) => b.trim().length > 0);
+
+  // Count standard paragraphs to determine insertion point
+  let totalParagraphs = 0;
+  for (const block of rawBlocks) {
+    const trimmed = block.trim();
+    const isHeading = trimmed.startsWith('#');
+    const isQuote = trimmed.startsWith('>');
+    const lines = trimmed.split('\n').filter((l) => l.trim().length > 0);
+    const isList =
+      lines.length > 0 &&
+      lines.every((line) => line.trim().startsWith('- ') || line.trim().startsWith('* '));
+
+    if (!isHeading && !isQuote && !isList) {
+      totalParagraphs++;
+    }
+  }
+
+  // Insert after paragraph 3 if >= 4 paragraphs, or after paragraph 2 if 2-3 paragraphs. Omit if < 2 paragraphs.
+  const adTargetParagraph =
+    totalParagraphs >= 4 ? 3 : totalParagraphs >= 2 ? 2 : -1;
+
+  let paragraphCounter = 0;
+  let adRendered = false;
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {blocks.map((block, blockIdx) => {
+      {rawBlocks.map((block, blockIdx) => {
         const trimmed = block.trim();
         if (!trimmed) return null;
 
@@ -139,16 +165,34 @@ export function MarkdownRenderer({
           );
         }
 
-        // Standard Paragraph with possible linebreaks
+        // Standard Paragraph
+        paragraphCounter++;
+        const shouldInsertAd =
+          showInArticleAd &&
+          !adRendered &&
+          adTargetParagraph > 0 &&
+          paragraphCounter === adTargetParagraph;
+
+        if (shouldInsertAd) {
+          adRendered = true;
+        }
+
         return (
-          <p key={blockIdx} className="leading-relaxed">
-            {trimmed.split('\n').map((line, lineIdx) => (
-              <React.Fragment key={lineIdx}>
-                {lineIdx > 0 && <br />}
-                {renderFormattedInline(line)}
-              </React.Fragment>
-            ))}
-          </p>
+          <React.Fragment key={blockIdx}>
+            <p className="leading-relaxed">
+              {trimmed.split('\n').map((line, lineIdx) => (
+                <React.Fragment key={lineIdx}>
+                  {lineIdx > 0 && <br />}
+                  {renderFormattedInline(line)}
+                </React.Fragment>
+              ))}
+            </p>
+            {shouldInsertAd && (
+              <div className="my-8 not-prose">
+                <AdSlot placement="in-article" />
+              </div>
+            )}
+          </React.Fragment>
         );
       })}
     </div>

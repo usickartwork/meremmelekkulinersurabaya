@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Flame, TrendingUp, Eye, ArrowUpRight } from 'lucide-react';
 import { Article } from '@/types';
+import AdSlot from './ads/AdSlot';
 
 interface TrendingLeaderboardProps {
   popularArticles: Article[];
@@ -149,6 +150,11 @@ export default function TrendingLeaderboard({
                 </article>
               );
             })}
+          </div>
+
+          {/* Simulated Desktop Sidebar Advertisement (300x250) */}
+          <div className="hidden lg:block pt-5 mt-5 border-t border-neutral-200">
+            <AdSlot placement="sidebar" />
           </div>
         </div>
       </div>

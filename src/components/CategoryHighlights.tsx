@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ChevronRight, Utensils, Coffee, Compass } from 'lucide-react';
 import { Article, Category } from '@/types';
 import ArticleCard from './ArticleCard';
+import AdFeedCard from './ads/AdFeedCard';
 
 interface CategoryHighlightsProps {
   categories: Category[];
@@ -15,7 +16,7 @@ export default function CategoryHighlights({ categories, articles }: CategoryHig
 
   return (
     <div className="space-y-12 mb-14">
-      {targetCategories.map((category) => {
+      {targetCategories.map((category, catIdx) => {
         const categoryArticles = articles
           .filter((a) => a.categoryId === category.id && a.status === 'published')
           .slice(0, 3);
@@ -26,7 +27,8 @@ export default function CategoryHighlights({ categories, articles }: CategoryHig
         const sideArticles = categoryArticles.slice(1);
 
         return (
-          <section key={category.id} className="border-t border-neutral-200 pt-6">
+          <React.Fragment key={category.id}>
+            <section className="border-t border-neutral-200 pt-6">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <span className="w-2.5 h-6 bg-orange-600 inline-block" />
@@ -70,8 +72,37 @@ export default function CategoryHighlights({ categories, articles }: CategoryHig
               </div>
             </div>
           </section>
-        );
-      })}
-    </div>
-  );
+
+          {/* Sponsored Feed Advertisement between category streams */}
+          {catIdx === 1 && (
+            <div className="pt-4 pb-2">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-neutral-50/80 p-5 border border-dashed border-neutral-300 rounded-xs">
+                <div className="md:col-span-4">
+                  <AdFeedCard adIndex={0} />
+                </div>
+                <div className="md:col-span-8 flex flex-col justify-center">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="w-2 h-2 bg-amber-500 rounded-full" />
+                    <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest font-semibold">
+                      Penempatan Iklan Sponsor Terkurasi
+                    </span>
+                  </div>
+                  <h4 className="text-base sm:text-lg font-bold text-neutral-900 font-editorial-serif mb-1">
+                    Dukung Ekosistem & Pertumbuhan Kuliner Lokal Surabaya
+                  </h4>
+                  <p className="text-xs text-neutral-600 leading-relaxed mb-3">
+                    Ruang promosi eksklusif bagi jenama kuliner, teknologi resto, dan UMKM lokal Jawa Timur untuk menjangkau puluhan ribu pembaca setia setiap minggunya.
+                  </p>
+                  <div className="text-[11px] font-semibold text-orange-600">
+                    Simulasi Penempatan Iklan Feed Berita • Prototipe Editorial
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </React.Fragment>
+      );
+    })}
+  </div>
+);
 }
