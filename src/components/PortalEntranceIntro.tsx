@@ -1,23 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-
-// Extend window interface to hold in-memory session flag
-declare global {
-  interface Window {
-    __merem_intro_completed?: boolean;
-  }
-}
+import { usePathname } from 'next/navigation';
 
 export default function PortalEntranceIntro() {
-  // If intro has already completed in this browser session (client-side navigation), skip immediately!
-  // On browser refresh (F5/Cmd+R) or first page entry, window is fresh (undefined), so it plays!
-  const [shouldShow, setShouldShow] = useState<boolean>(() => {
-    if (typeof window !== 'undefined' && window.__merem_intro_completed) {
-      return false;
-    }
-    return true;
-  });
+  const pathname = usePathname();
+
+  // Exclude admin pages so dashboard editing is instant
+  const isAdmin = pathname?.startsWith('/admin');
 
   // Animation Stages:
   // 0: Layar Putih Bersih Dulu (Clean white canvas pause - 450ms)
@@ -25,13 +15,13 @@ export default function PortalEntranceIntro() {
   // 2: Senyum (The orange smile curve underneath curves in)
   // 3: Garpu & Sendok (The authentic fork & spoon inside the 'm')
   // 4: Logo Lengkap + Tulisan "Merem Kuliner Surabaya" (Full logo completes without glow)
-  // 5: Smooth fade out of splash screen revealing the news portal
+  // 5: Smooth fade out of splash screen revealing the page
   const [step, setStep] = useState<number>(0);
   const [fadeOut, setFadeOut] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!shouldShow) return;
+    if (isAdmin) return;
 
     // Sequence pacing: putih dulu, lalu animasi mengalir tenang dan elegan
     const t0 = setTimeout(() => setStep(1), 450);   // 450ms: Putih dulu, lalu Mata muncul
@@ -39,13 +29,7 @@ export default function PortalEntranceIntro() {
     const t2 = setTimeout(() => setStep(3), 1950);  // 1950ms: Garpu & Sendok terpasang
     const t3 = setTimeout(() => setStep(4), 2700);  // 2700ms: Logo Lengkap + Tulisan "Merem Kuliner Surabaya"
     const t4 = setTimeout(() => setFadeOut(true), 4000); // 4000ms: Tampil utuh selama 1.3 detik, lalu mulai fade out
-    const t5 = setTimeout(() => {
-      setIsFinished(true);
-      // Mark as completed for this browser window session so internal navigation does not replay
-      if (typeof window !== 'undefined') {
-        window.__merem_intro_completed = true;
-      }
-    }, 4750); // 4750ms: Selesai & unmount
+    const t5 = setTimeout(() => setIsFinished(true), 4750); // 4750ms: Selesai & unmount dari layar
 
     return () => {
       clearTimeout(t0);
@@ -55,9 +39,9 @@ export default function PortalEntranceIntro() {
       clearTimeout(t4);
       clearTimeout(t5);
     };
-  }, [shouldShow]);
+  }, [isAdmin]);
 
-  if (!shouldShow || isFinished) return null;
+  if (isAdmin || isFinished) return null;
 
   return (
     <div

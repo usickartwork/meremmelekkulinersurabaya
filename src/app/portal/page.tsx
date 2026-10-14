@@ -7,7 +7,6 @@ import TrendingLeaderboard from '@/components/TrendingLeaderboard';
 import EditorPickSection from '@/components/EditorPickSection';
 import CategoryHighlights from '@/components/CategoryHighlights';
 import Footer from '@/components/Footer';
-import PortalEntranceIntro from '@/components/PortalEntranceIntro';
 import AdSlot from '@/components/ads/AdSlot';
 import { getArticles, getCategories } from '@/lib/store';
 import {
@@ -34,9 +33,6 @@ export default async function PortalPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      {/* Intro Entrance Animation: Logo assembles directly into page without loading */}
-      <PortalEntranceIntro />
-
       {/* Editorial Header */}
       <Header categories={categories} />
 

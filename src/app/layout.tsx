@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
+import PortalEntranceIntro from "@/components/PortalEntranceIntro";
+
 export default function RootLayout({
   children,
 }: {
@@ -46,6 +48,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
       <body className="min-h-full flex flex-col bg-[#FDFDFD] text-[#121212] font-sans antialiased selection:bg-orange-500 selection:text-white">
+        <PortalEntranceIntro />
         {children}
       </body>
     </html>
